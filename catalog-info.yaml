@@ -1,0 +1,43 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: intel-xeon6-ai-agent
+  title: intel-xeon6-ai-agent
+  description: A 45-minute hands-on lab for Intel and Red Hat technical sellers
+    and solution architects. Learners deploy a lightweight LangGraph
+    solution-advisor agent on Red Hat OpenShift, connect three MCP tools for
+    sourced Intel hardware and Red Hat platform information, and generate an
+    illustrative solution brief using tenant-scoped RACMaaS CPU inference on
+    Intel Xeon 6. The lab demonstrates agent orchestration, structured tool
+    calling, and human validation of AI-generated recommendations. Triforce
+    provides the versioned application implementation, while this project owns
+    the learner-facing Showroom content and Publishing House lifecycle.
+  annotations:
+    ph.rhdp.io/content-type: lab
+    ph.rhdp.io/deployment-mode: rhdp_published
+    ph.rhdp.io/github-user: jkershawrh
+    ph.rhdp.io/owner: jkershaw@redhat.com
+    ph.rhdp.io/migrated-repo: https://github.com/jkershawrh/intel-xeon6-ai-agent-201
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: rhpds/intel-xeon6-ai-agent
+    ph.rhdp.io/created-at: 2026-09-01T20:33:10.182Z
+  tags:
+    - publishing-house
+    - lab
+    - rhdp-published
+    - migration
+  links:
+    - url: https://github.com/rhpds/intel-xeon6-ai-agent
+      title: Repository
+      icon: github
+    - url: https://devspaces.apps.ocpv-infra02.wdc07.infra.demo.redhat.com#https://github.com/rhpds/intel-xeon6-ai-agent
+      title: Open in DevSpaces
+      icon: catalog
+    - url: https://central-api-publishing-house.apps.ocpv-infra02.wdc07.infra.demo.redhat.com
+      title: Central
+      icon: dashboard
+spec:
+  type: content
+  lifecycle: experimental
+  owner: rhdp-team
+  system: publishing-house
