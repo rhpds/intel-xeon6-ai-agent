@@ -16,8 +16,8 @@ project:
   automation_type: "ansible"
   description: "A 45-minute hands-on lab for Intel and Red Hat technical sellers and solution architects. Learners deploy a lightweight LangGraph solution-advisor agent on Red Hat OpenShift, connect three MCP tools for sourced Intel hardware and Red Hat platform information, and generate an illustrative solution brief using tenant-scoped RACMaaS CPU inference on Intel Xeon 6. The lab demonstrates agent orchestration, structured tool calling, and human validation of AI-generated recommendations. Triforce provides the versioned application implementation, while this project owns the learner-facing Showroom content and Publishing House lifecycle."
   # content_reviewer_email and infra_reviewer_email are assigned by the RHDP team — not set by the author
-  jira_ticket: ""
-  workflow_id: ""
+  jira_ticket: "RHDPCD-1418"
+  workflow_id: "25c3e15e-50aa-411f-8c1c-610293fdb3dc"
 
 spec:
   title: "Intel Xeon 6 201: Building an AI Agent"
