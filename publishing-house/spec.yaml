@@ -88,15 +88,49 @@ approval_checklist:
   content:
     prerequisites_verifiable: true
     assessment_strategy: "Classic-lab verification blocks use observable pod, MCP, API, and UI results; learners also compare model quality and latency."
-    catalog_gap: "Provides an Intel Xeon 6 CPU-inference agent-building lab for technical sellers; it is not a duplicate quick start."
+    catalog_gap: "Provides a concise introductory agent-building lab for technical sellers that combines Intel Xeon 6 CPU inference, tenant-scoped RACMaaS, LangGraph, and MCP on OpenShift 4.22. The closest catalog content is longer, production-oriented, GPU-focused, or centered on OpenShift Lightspeed rather than this basic CPU-inference learning path."
     design_overview: "Learners progress from agent concepts to MCP deployment, RACMaaS-backed orchestration, and prompt/model tuning in an isolated OpenShift tenant namespace."
     module_summaries:
     - "Identify the roles of the model, tools, prompt, and orchestration layer."
     - "Deploy and exercise three MCP tools containing sourced workshop data."
     - "Deploy the agent and UI and verify a structured RACMaaS-backed recommendation."
     - "Evaluate scenarios, customize the prompt, and compare CPU-served models."
-    rcars_overlap_pct: null
-    rcars_top_matches: []
+    rcars_overlap_pct: 80
+    rcars_top_matches:
+    - title: "Taking MCP Servers to Production on OpenShift AI with the Red Hat MCP Registry"
+      ci_name: "published.openshift-mcp-lab.prod"
+      url: "https://catalog.demo.redhat.com/catalog?item=published.openshift-mcp-lab.prod"
+      relevance_score: 80
+      why_it_fits: "Covers MCP deployment, agent connectivity, and tool governance, but does not cover Intel Xeon 6 CPU inference, RACMaaS, or LangGraph and is production-oriented."
+      workloads:
+      - role: "ocp4_workload_litellm_virtual_keys"
+        collection: "rhpds.litellm_virtual_keys"
+      - role: "ocp4_workload_mcp_user"
+        collection: "rhpds.mcp_workloads"
+      - role: "ocp4_workload_showroom"
+        collection: "agnosticd.showroom"
+    - title: "VLLM Playground"
+      ci_name: "agd-v2.vllm-playground-aws.prod"
+      url: "https://catalog.demo.redhat.com/catalog?item=agd-v2.vllm-playground-aws.prod"
+      relevance_score: 64
+      why_it_fits: "Covers tool calling and MCP integration, but uses NVIDIA GPU inference with RHAIIS and Podman rather than Intel Xeon 6 CPU inference with RACMaaS on OpenShift 4.22."
+      workloads:
+      - role: "vm_workload_showroom"
+        collection: "agnosticd.showroom"
+      - role: "rhel_workload_vllm_playground"
+        collection: "vllm_playground.demo"
+    - title: "OpenShift Lightspeed Demo"
+      ci_name: "published.ocp4-lightspeed.prod"
+      url: "https://catalog.demo.redhat.com/catalog?item=published.ocp4-lightspeed.prod"
+      relevance_score: 60
+      why_it_fits: "Covers custom MCP servers on OpenShift, but focuses on OpenShift Lightspeed and does not cover RACMaaS, Intel Xeon 6 inference, or LangGraph."
+      workloads:
+      - role: "ocp4_workload_litellm_virtual_keys"
+        collection: "rhpds.litellm_virtual_keys"
+      - role: "ocp4_workload_lightspeed_demo"
+        collection: "rhpds.openshift_lightspeed_demo"
+      - role: "ocp4_workload_showroom"
+        collection: "agnosticd.core_workloads"
     rejections: []
 
   infra:
