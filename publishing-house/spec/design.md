@@ -50,17 +50,17 @@ Intermediate.
 
 ## Environment
 
-**Learner view:** The learner receives credentials for an isolated namespace on the shared `ai-lab-xeon6-inference` OpenShift cluster and an automatically generated, tenant-scoped RACMaaS virtual key. The Showroom includes terminal, OpenShift Console, and Solution Architect UI tabs. No model server is deployed by the learner.
+**Learner view:** The learner receives credentials for an isolated namespace on an RHDP-managed shared OpenShift cluster and an automatically generated, tenant-scoped RACMaaS virtual key. The Showroom includes terminal, OpenShift Console, and Solution Architect UI tabs. No model server is deployed by the learner.
 
-**Automation needed:** Yes. Existing AgnosticV tenant automation creates the user, namespace, quota, Showroom, and seven-day RACMaaS virtual key. Learners deploy the pinned tool, agent, and UI manifests during the exercises.
+**Automation needed:** Yes. Publishing House infrastructure onboarding will assign and validate the RHDP AgnosticV base CI that creates the user, namespace, quota, Showroom, and tenant-scoped RACMaaS virtual key. Learners deploy the pinned tool, agent, and UI manifests during the exercises. This RHDP provisioning path is independent of other implementation or event environments.
 
 ## Infrastructure Requirements
 
 - **Cloud provider:** CNV
 - **Cluster type:** Multinode shared cluster
 - **OCP version:** 4.22
-- **Topology:** Shared cluster, isolated namespace per learner
-- **Sizing:** Existing `ai-lab-xeon6-inference` cluster; tenant quota requests 2 CPU and 2 GiB memory and limits 4 CPU and 4 GiB memory
+- **Topology:** RHDP-managed shared cluster, isolated namespace per learner, supporting up to 25 concurrent learners
+- **Sizing:** Tenant quota requests 2 CPU and 2 GiB memory and limits 4 CPU and 4 GiB memory; aggregate cluster capacity and RACMaaS demand must be validated independently for 25 concurrent RHDP learners during infrastructure review
 - **Automation approach:** Ansible through AgnosticV
 - **AI/MaaS:** RACMaaS open-source CPU model; default `qwen25-3b-cpu`, with an optional `phi3-mini-cpu` comparison
 - **External services:** github.com, quay.io, and RACMaaS

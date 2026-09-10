@@ -23,7 +23,7 @@ House submission.
 
 - Maintainer: Jonathan Kershaw (`jkershaw@redhat.com`)
 - Catalog provider: Red Hat Demo Platform (RHDP)
-- Runtime target: shared `ai-lab-xeon6-inference` OpenShift environment
+- Runtime target: RHDP-managed shared OpenShift environment assigned through Publishing House infrastructure onboarding
 - Inference: automatically provisioned, tenant-scoped RACMaaS virtual key
 
 Report security concerns through Red Hat's approved internal security process.

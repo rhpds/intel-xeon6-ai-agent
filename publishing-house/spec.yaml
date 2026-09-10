@@ -34,7 +34,7 @@ spec:
     platform: "ocp"
     topology: "shared-cluster"
     cloud_provider: cnv        # cnv | aws | troshka — cnv is default
-    max_concurrent_users: 4
+    max_concurrent_users: 25
 
     # --- OCP-specific fields (only when platform = ocp) ---
     ocp_version: "4.22"
@@ -134,9 +134,9 @@ approval_checklist:
     rejections: []
 
   infra:
-    peak_environments: 4
-    cost_per_run_est: "Shared-cluster tenant workload; no dedicated cluster or GPU allocation per learner."
-    provisioning_time_est: "Approximately 10-15 minutes, subject to shared-cluster availability."
-    agnosticv_base_ci: "ai-lab-xeon6-inference; ai-quickstarts.ai-qs-triforce-201-tenant.dev"
+    peak_environments: 25
+    cost_per_run_est: "RHDP-managed shared-cluster tenant workload for up to 25 concurrent learners; no dedicated cluster or GPU allocation per learner."
+    provisioning_time_est: "Approximately 10-15 minutes, subject to RHDP shared-cluster availability and 25-user capacity validation."
+    agnosticv_base_ci: "To be assigned and validated by Publishing House Infra Review for the RHDP provisioning track."
     approved_by: ""
     rejections: []
