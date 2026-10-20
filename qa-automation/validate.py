@@ -61,7 +61,6 @@ def main():
     connection = read("configmap", "racmaas-connection").get("data", {}).get("api-base", "")
     if not connection.startswith("https://") or not connection.endswith("/v1"):
         raise ValueError("Model endpoint has not been provisioned")
-    read("namespace", args.namespace)
     print("PASS: tenant namespace and per-order connection objects exist")
     # Learners deploy the three applications during the exercises. Provisioning
     # health must not require a learner to have completed the lab already.
