@@ -1,0 +1,53 @@
+---
+- name: Verify the provisioned connection first
+  ansible.builtin.import_playbook: healthcheck.yml
+
+- name: Complete the Intel 201 learner deployment and real inference path
+  hosts: localhost
+  gather_facts: false
+  module_defaults:
+    group/kubernetes.core.k8s:
+      kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+  environment:
+    KUBECONFIG: "{{ k8s_kubeconfig | default(lookup('env', 'KUBECONFIG'), true) }}"
+  vars:
+    intel_201_lab_namespace: "{{ project_name | default('user-' ~ guid ~ '-triforce') }}"
+    intel_201_manifest_ref: 201-v1.0.0
+    intel_201_test_model: qwen25-3b-cpu
+  tasks:
+    - name: Modules 2 and 3 - fetch the learner's versioned manifests
+      ansible.builtin.uri:
+        url: "https://raw.githubusercontent.com/rhpds/triforce/{{ intel_201_manifest_ref }}/infrastructure/manifests-201/{{ item }}"
+        return_content: true
+        validate_certs: true
+        timeout: 20
+      loop:
+        - solution-tools.yaml
+        - advisor-prompt-configmap.yaml
+        - solution-agent.yaml
+        - solution-ui.yaml
+      register: intel_201_manifests
+
+    - name: Modules 2 and 3 - deploy only into the assigned tenant
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ intel_201_lab_namespace }}"
+        definition: "{{ item.content | from_yaml_all | list }}"
+        wait: true
+        wait_timeout: 180
+      loop: "{{ intel_201_manifests.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Modules 3 and 4 - verify both model stages and all MCP tools
+      ansible.builtin.command:
+        argv:
+          - python3
+          - "{{ playbook_dir }}/validate.py"
+          - --namespace
+          - "{{ intel_201_lab_namespace }}"
+          - --mode
+          - e2e
+          - --model
+          - "{{ intel_201_test_model }}"
+      changed_when: false

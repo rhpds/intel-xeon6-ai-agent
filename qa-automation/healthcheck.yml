@@ -1,0 +1,47 @@
+---
+- name: Check the provisioned Intel 201 tenant before learner exercises
+  hosts: localhost
+  gather_facts: false
+  module_defaults:
+    group/kubernetes.core.k8s:
+      kubeconfig: "{{ k8s_kubeconfig | default(omit) }}"
+  vars:
+    intel_201_lab_namespace: "{{ project_name | default('user-' ~ guid ~ '-triforce') }}"
+  tasks:
+    - name: Require an explicit Intel 201 tenant namespace
+      ansible.builtin.assert:
+        that:
+          - intel_201_lab_namespace is match('^user-[a-z0-9][a-z0-9-]*-triforce$')
+        fail_msg: "PH must supply the assigned Intel 201 tenant namespace"
+
+    - name: Read the non-secret model connection
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: ConfigMap
+        namespace: "{{ intel_201_lab_namespace }}"
+        name: racmaas-connection
+      register: intel_201_connection
+
+    - name: Require the provisioned HTTPS API base
+      ansible.builtin.assert:
+        that:
+          - intel_201_connection.resources | length == 1
+          - intel_201_connection.resources[0].data['api-base'] is match('^https://[^/]+/v1$')
+        fail_msg: "Provisioning must create the model connection before Module 3"
+
+    - name: Read only the assigned credential object
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Secret
+        namespace: "{{ intel_201_lab_namespace }}"
+        name: litellm-api-key
+      register: intel_201_credential
+      no_log: true
+
+    - name: Require a non-empty per-order credential
+      ansible.builtin.assert:
+        that:
+          - intel_201_credential.resources | length == 1
+          - intel_201_credential.resources[0].data['api-key'] | default('') | length > 0
+        fail_msg: "Provisioning must create a per-order virtual key"
+      no_log: true

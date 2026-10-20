@@ -39,7 +39,7 @@ def validate_response(data, model):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--context", required=True)
+    parser.add_argument("--context", help="Optional local context; PH runner uses its assigned kubeconfig")
     parser.add_argument("--namespace", required=True)
     parser.add_argument("--mode", choices=["health", "e2e"], default="health")
     parser.add_argument("--model", default="qwen25-3b-cpu")
@@ -47,13 +47,15 @@ def main():
     if not re.fullmatch(r"user-[a-z0-9][a-z0-9-]*-triforce", args.namespace):
         parser.error("An explicit Intel 201 tenant namespace is required")
 
+    oc = ["oc"] + (["--context", args.context] if args.context else [])
+
     def read(kind, name):
-        result = subprocess.run(["oc", "--context", args.context, "-n", args.namespace,
+        result = subprocess.run(oc + ["-n", args.namespace,
                                  "get", kind, name, "-o", "json"], capture_output=True, check=True)
         return json.loads(result.stdout)
 
     # Check only existence, never retrieve the Secret payload.
-    subprocess.run(["oc", "--context", args.context, "-n", args.namespace,
+    subprocess.run(oc + ["-n", args.namespace,
                     "get", "secret", "litellm-api-key", "-o", "name"],
                    capture_output=True, check=True)
     connection = read("configmap", "racmaas-connection").get("data", {}).get("api-base", "")
