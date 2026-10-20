@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only tenant health checks; e2e submits one synthetic inference request.
+"""Read-only provisioned-tenant checks; e2e validates the solved lab and inference.
 
 Never prints routes, responses, credentials, or raw subprocess errors.
 """
@@ -59,6 +59,12 @@ def main():
     connection = read("configmap", "racmaas-connection").get("data", {}).get("api-base", "")
     if not connection.startswith("https://") or not connection.endswith("/v1"):
         raise ValueError("Model endpoint has not been provisioned")
+    read("namespace", args.namespace)
+    print("PASS: tenant namespace and per-order connection objects exist")
+    # Learners deploy the three applications during the exercises. Provisioning
+    # health must not require a learner to have completed the lab already.
+    if args.mode == "health":
+        return
     for name in ("solution-tools", "solution-agent", "solution-ui"):
         deployment = read("deployment", name)
         if deployment.get("status", {}).get("availableReplicas", 0) < 1:
