@@ -1,0 +1,65 @@
+---
+- name: Validate tenant and lifecycle action
+  ansible.builtin.assert:
+    that:
+      - ACTION | default('provision') in ['provision', 'destroy']
+      - intel_201_namespace is match('^user-[a-z0-9][a-z0-9-]*-triforce$')
+    fail_msg: "An explicit Intel 201 tenant namespace and valid lifecycle action are required"
+
+- name: Provision connection in the existing tenant namespace
+  when: ACTION | default('provision') == 'provision'
+  block:
+    - name: Validate connection inputs
+      ansible.builtin.assert:
+        that:
+          - intel_201_api_key | default('') | length > 0
+          - (intel_201_api_base | default('') | urlsplit('scheme')) == 'https'
+          - (intel_201_api_base | urlsplit('hostname')) | length > 0
+          - (intel_201_api_base | urlsplit('path')) in ['', '/', '/v1', '/v1/']
+          - not (intel_201_api_base | urlsplit('username'))
+          - not (intel_201_api_base | urlsplit('query'))
+        fail_msg: "A platform-assigned HTTPS endpoint and per-order virtual key are required"
+      no_log: true
+
+    - name: Store non-secret model endpoint
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: racmaas-connection
+            namespace: "{{ intel_201_namespace }}"
+            labels:
+              app.kubernetes.io/part-of: intel-201-lab
+          data:
+            api-base: "{{ intel_201_api_base | regex_replace('/+$', '') | regex_replace('/v1$', '') }}/v1"
+
+    - name: Store the per-order key without rendering it into learner content
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: litellm-api-key
+            namespace: "{{ intel_201_namespace }}"
+            labels:
+              app.kubernetes.io/part-of: intel-201-lab
+          type: Opaque
+          stringData:
+            api-key: "{{ intel_201_api_key }}"
+      no_log: true
+
+- name: Remove only the connection objects owned by this role
+  kubernetes.core.k8s:
+    api_version: v1
+    kind: "{{ item.kind }}"
+    name: "{{ item.name }}"
+    namespace: "{{ intel_201_namespace }}"
+    state: absent
+  loop:
+    - {kind: ConfigMap, name: racmaas-connection}
+    - {kind: Secret, name: litellm-api-key}
+  when: ACTION | default('provision') == 'destroy'
+  no_log: true
