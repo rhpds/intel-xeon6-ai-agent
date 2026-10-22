@@ -5,6 +5,7 @@ Never prints routes, responses, credentials, or raw subprocess errors.
 """
 import argparse
 import json
+import math
 import re
 import subprocess
 import sys
@@ -14,6 +15,8 @@ TOOLS = {"intel_hardware_lookup", "openshift_capabilities", "reference_architect
 
 
 def validate_response(data, model):
+    if not isinstance(data, dict):
+        raise ValueError("Response must be an object")
     if not isinstance(data.get("brief"), str) or len(data["brief"].strip()) < 80:
         raise ValueError("Missing substantive solution brief")
     for key, kind in (("requirements", dict), ("hardware_options", list),
@@ -32,7 +35,7 @@ def validate_response(data, model):
         raise ValueError("Missing MCP tool evidence")
     for e in entries:
         latency = e.get("latency_ms")
-        if isinstance(latency, bool) or not isinstance(latency, (int, float)) or latency < 0:
+        if isinstance(latency, bool) or not isinstance(latency, (int, float)) or not math.isfinite(latency) or latency < 0:
             raise ValueError("Invalid latency evidence")
     return True
 
