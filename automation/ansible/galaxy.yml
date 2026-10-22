@@ -1,0 +1,10 @@
+namespace: intel_ai_agent
+name: automation
+version: 0.1.0
+readme: README.md
+authors: [Jonathan Kershaw]
+description: Tenant connection provisioning for the Intel 201 guided lab
+license: [Apache-2.0]
+repository: https://github.com/rhpds/intel-xeon6-ai-agent
+dependencies:
+  kubernetes.core: ">=3.0.0"

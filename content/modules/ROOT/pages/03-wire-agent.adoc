@@ -37,18 +37,15 @@ This is the primary control surface. Change the prompt, change the behavior -- n
 
 Deploy the solution-agent pod. It connects to the RACMaaS endpoint assigned to this lab and the MCP server for tools:
 
-The lab provisioner has already generated and assigned a short-lived, model-scoped virtual key. Store the assigned endpoint in a ConfigMap and the assigned virtual key in a Secret so the deployment does not hard-code either value:
+The lab provisioner creates `racmaas-connection` and `litellm-api-key` directly in your assigned namespace. The virtual key is never rendered into the Showroom page. Verify the objects exist without displaying the credential:
 
 [source,bash,role="execute",subs=attributes+]
 ----
-oc create configmap racmaas-connection \
-  --from-literal=api-base='{litellm_api_endpoint}' \
-  --dry-run=client -o yaml | oc apply -f -
-
-oc create secret generic litellm-api-key \
-  --from-literal=api-key='{litellm_virtual_key}' \
-  --dry-run=client -o yaml | oc apply -f -
+oc get configmap racmaas-connection
+oc get secret litellm-api-key -o custom-columns=NAME:.metadata.name,TYPE:.type
 ----
+
+If either object is missing, stop and report the lab GUID to the lab owner. Do not create a personal key or paste credentials into a shared terminal or page.
 
 [source,bash,role="execute",subs=attributes+]
 ----

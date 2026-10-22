@@ -1,5 +1,12 @@
-# Publishing House Worklog
-# Human context, decisions, and notes that bridge sessions and people.
-# Not a task tracker — the manifest tracks structured progress.
-
-entries: []
+# Publishing House worklog: source preparation is not live-order acceptance.
+entries:
+  - date: "2026-10-20"
+    stage: development
+    summary: >-
+      Resumed under RHDPCD-1418, GPTEINFRA-17786 and INTEL-49. Prepared the
+      configure_connection Ansible role and health/E2E checks for RHDPCD-1422,
+      RHDPCD-1423 and RHDPCD-1424. Model keys remain provisioner-owned and no
+      longer render into Showroom. Local regression and syntax checks are
+      separate from live acceptance. The PH workflow remains Env Setup;
+      infrastructure base CI assignment, fresh dev order, authenticated UI,
+      isolation, teardown/key revocation and 25-user capacity are pending.

@@ -52,7 +52,7 @@ ADVISOR_URL="https://$(oc get route solution-agent -o jsonpath='{.spec.host}')"
 curl -fsS -X POST "${ADVISOR_URL}/api/v1/advise" \
   -H "Content-Type: application/json" \
   -d '{
-    "query": "A 50-person startup classifies 1M customer support tickets per day using GPT-4 at $0.03 per request. They are spending $30K per month on API calls. They want to cut costs by 90% without losing classification accuracy."
+    "query": "A 50-person startup classifies 1M customer support tickets per month using GPT-4 at $0.03 per request. They process 1M requests per month and spend $30K per month on API calls. They want to cut costs by 90% without losing classification accuracy."
   }' | jq '.brief'
 ----
 
@@ -153,13 +153,23 @@ curl -fsS -X POST "${ADVISOR_URL}/api/v1/advise" \
 * What would you change in the prompt to improve the output? ___
 ****
 
-== Exercise 4: Swap the Model
+== Exercise 4: Compare an Approved Model (Optional)
 
-Try a larger model to see if the recommendation quality improves:
+Keep the core learner path on its assigned model. A model appearing in another
+lab is not proof that this order's key can use it. Ask the facilitator for an
+approved alternative and its quota before this exercise. Skip the swap if one
+is not allocated; record that limitation instead of marking a comparison done.
+
+Save the current model, then enter the approved alternative name:
 
 [source,bash,role="execute",subs=attributes+]
 ----
-oc set env deploy/solution-agent ADVISOR_MODEL=phi3-mini-cpu
+export ORIGINAL_ADVISOR_MODEL=$(oc get deployment solution-agent -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="ADVISOR_MODEL")].value}')
+test -n "$ORIGINAL_ADVISOR_MODEL" || { echo 'STOP: could not determine original model'; false; }
+read -r -p 'Facilitator-approved alternative model: ' ALTERNATE_ADVISOR_MODEL
+if [ -n "$ORIGINAL_ADVISOR_MODEL" ] && [ -n "$ALTERNATE_ADVISOR_MODEL" ]; then
+  oc set env deploy/solution-agent ADVISOR_MODEL="$ALTERNATE_ADVISOR_MODEL"
+fi
 oc rollout status deploy/solution-agent --timeout=90s
 ----
 
@@ -179,12 +189,24 @@ curl -fsS -X POST "${ADVISOR_URL}/api/v1/advise" \
 ****
 *Record:*
 
-* 3B model quality (1-5): ___
-* 3.8B model quality (1-5): ___
-* 3B model inference time: ___ ms
-* 3.8B model inference time: ___ ms
+* Original assigned model and quality (1-5): ___
+* Approved alternative model and quality (1-5), or skipped: ___
+* Original model inference time: ___ ms
+* Alternative model inference time: ___ ms
 * Worth the extra latency? ___
 ****
+
+Restore the original model before continuing. If the comparison failed, restore
+it before troubleshooting. Check both model stages in `inference_log` for the
+selected model and the absence of errors; a fallback brief is not successful inference.
+
+[source,bash,role="execute"]
+----
+if [ -n "$ORIGINAL_ADVISOR_MODEL" ]; then
+  oc set env deploy/solution-agent ADVISOR_MODEL="$ORIGINAL_ADVISOR_MODEL"
+  oc rollout status deploy/solution-agent --timeout=90s
+fi
+----
 
 == Exercise 5: Your Agent Card
 
@@ -198,7 +220,7 @@ Fill in this summary — it captures what you built and what you would show a cu
 
 *System prompt customization*: What did you add or change from the default? ___
 
-*Model selected*: [ ] qwen25-3b-cpu (3B, faster) [ ] phi3-mini-cpu (3.8B, richer)
+*Model selected*: assigned model ___; optional approved alternative ___
 
 *Why*: ___
 
@@ -224,7 +246,7 @@ Fill in this summary — it captures what you built and what you would show a cu
 * [ ] Three canned scenarios returned different recommendations
 * [ ] Custom system prompt deployed and tested
 * [ ] Customer-specific query returned relevant output
-* [ ] Model swap compared (quality + latency)
+* [ ] Optional approved model comparison recorded, or skipped with reason; original model restored
 * [ ] Agent card filled in
 
 == Learning Outcomes
